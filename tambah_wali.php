@@ -118,7 +118,7 @@ mysqli_close($koneksi);
                 </form>
             </div>
             <div class="footer">
-                <a href="index.php" class="btn btn-outline-secondary" style="border-radius: 30px;">Kembali</a>
+                <a href="wali_murid.php" class="btn btn-outline-secondary" style="border-radius: 30px;">Kembali</a>
             </div>
         </div>
     </div>
