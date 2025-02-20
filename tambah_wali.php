@@ -19,7 +19,7 @@ if (isset($_POST['tambah_wali'])) {
         
         // Menjalankan query
         if (mysqli_stmt_execute($stmt)) {
-            echo "<script>alert('Wali Murid berhasil ditambahkan!'); window.location='index.php';</script>";
+            echo "<script>alert('Wali Murid berhasil ditambahkan!'); window.location='wali_murid.php';</script>";
         } else {
             echo "<script>alert('Gagal menambahkan wali murid!');</script>";
         }

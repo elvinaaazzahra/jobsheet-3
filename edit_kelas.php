@@ -1,40 +1,40 @@
 <?php
 include 'koneksi.php';
 
-// Periksa apakah ada ID kelas yang dikirim
-if (!isset($_GET['id']) || empty($_GET['id'])) {
-    echo "<script>alert('ID Kelas tidak ditemukan!'); window.location='kelas.php';</script>";
-    exit();
+if (isset($_GET['id'])) {
+    $id_kelas = $_GET['id'];
+
+    // Ambil data kelas berdasarkan ID
+    $query = "SELECT * FROM kelas WHERE id_kelas = ?";
+    $stmt = mysqli_prepare($koneksi, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id_kelas);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $data = mysqli_fetch_assoc($result);
+    mysqli_stmt_close($stmt);
 }
 
-$id_kelas = mysqli_real_escape_string($koneksi, $_GET['id']);
-
-// Ambil data kelas berdasarkan ID
-$query = "SELECT * FROM kelas WHERE id_kelas = '$id_kelas'";
-$result = mysqli_query($koneksi, $query);
-
-if (mysqli_num_rows($result) == 0) {
-    echo "<script>alert('Kelas tidak ditemukan!'); window.location='kelas.php';</script>";
-    exit();
-}
-
-$row = mysqli_fetch_assoc($result);
-
-// Proses update kelas
-if (isset($_POST['update_kelas'])) {
+if (isset($_POST['update'])) {
     $nama_kelas = mysqli_real_escape_string($koneksi, $_POST['nama_kelas']);
 
     if (!empty($nama_kelas)) {
-        $update_query = "UPDATE kelas SET nama_kelas = '$nama_kelas' WHERE id_kelas = '$id_kelas'";
-        if (mysqli_query($koneksi, $update_query)) {
+        $query = "UPDATE kelas SET nama_kelas = ? WHERE id_kelas = ?";
+        $stmt = mysqli_prepare($koneksi, $query);
+        mysqli_stmt_bind_param($stmt, "si", $nama_kelas, $id_kelas);
+
+        if (mysqli_stmt_execute($stmt)) {
             echo "<script>alert('Kelas berhasil diperbarui!'); window.location='kelas.php';</script>";
         } else {
             echo "<script>alert('Gagal memperbarui kelas!');</script>";
         }
+
+        mysqli_stmt_close($stmt);
     } else {
-        echo "<script>alert('Nama Kelas tidak boleh kosong!');</script>";
+        echo "<script>alert('Nama kelas tidak boleh kosong!');</script>";
     }
 }
+
+mysqli_close($koneksi);
 ?>
 
 <!DOCTYPE html>
@@ -46,19 +46,18 @@ if (isset($_POST['update_kelas'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container mt-4">
-        <h2 class="mb-4 text-center">Edit Kelas</h2>
-
+    <div class="container mt-5">
+        <h3>Edit Kelas</h3>
         <form method="POST">
             <div class="mb-3">
                 <label class="form-label">Nama Kelas</label>
-                <input type="text" name="nama_kelas" class="form-control" value="<?= htmlspecialchars($row['nama_kelas']); ?>" required>
+                <input type="text" name="nama_kelas" class="form-control" value="<?php echo htmlspecialchars($data['nama_kelas']); ?>" required>
             </div>
-            <button type="submit" name="update_kelas" class="btn btn-primary">Simpan Perubahan</button>
-            <a href="kelas.php" class="btn btn-secondary">Batal</a>
+            <button type="submit" name="update" class="btn btn-warning">Update</button>
+            <a href="kelas.php" class="btn btn-secondary">Kembali</a>
         </form>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
